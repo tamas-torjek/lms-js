@@ -5,57 +5,64 @@ import { userPrompt } from "./user-prompt.js";
 
 const DEFAULT_MODEL = "qwen3-30b-a3b-thinking-2507-hi-mlx";
 
-function parseModelArg(): string {
+type ParsedArgs = {
+  modelName: string;
+  commitHash?: string;
+};
+
+function parseArgs(): ParsedArgs {
   const argv = process.argv.slice(2);
 
   if (argv.includes("--help") || argv.includes("-h")) {
-    console.log(`Usage: node script.js [modelName] [--model=MODEL_NAME]
+    console.log(`Usage: node script.js [modelName] [--model=MODEL_NAME] [--commit=HASH]
 
 Examples:
-  node script.js                          # uses default model
-  node script.js qwen3-30b-a3b-thinking-2507-hi-mlx
-  node script.js --model=your-model-name
+  node script.js                          # uses default model, staged diff
+  node script.js qwen3-7b                # custom model, staged diff
+  node script.js --model=qwen3-7b --commit=abc123
 `);
-
     process.exit(0);
   }
 
-  // Check for --model=foo
-  const modelFlag = argv.find((a) => a.startsWith("--model="));
-  if (modelFlag) {
-    return modelFlag.split("=")[1] || DEFAULT_MODEL;
+  let modelName = DEFAULT_MODEL;
+  let commitHash: string | undefined;
+
+  for (const arg of argv) {
+    if (arg.startsWith("--model=")) {
+      modelName = arg.split("=")[1] || DEFAULT_MODEL;
+    } else if (arg.startsWith("--commit=")) {
+      commitHash = arg.split("=")[1];
+    } else if (!arg.startsWith("-") && modelName === DEFAULT_MODEL) {
+      modelName = arg;
+    }
   }
 
-  // Positional first argument if it doesn't look like a flag
-  if (argv[0] && !argv[0].startsWith("-")) {
-    return argv[0];
-  }
-
-  return DEFAULT_MODEL;
+  return { modelName, commitHash };
 }
 
-const modelName = parseModelArg();
+const { modelName, commitHash } = parseArgs();
 const client = new LMStudioClient();
 
 getDiff(modelName);
 
 function getDiff(modelName: string): void {
-  exec(
-    "git --no-pager diff --no-color --no-ext-diff --cached --minimal",
-    async (error, stdout, stderr): Promise<void> => {
-      if (error) {
-        console.error(`Execution error: ${error}`);
-        return;
-      }
+  const diffCommand =
+    `git --no-pager diff --no-color --no-ext-diff --minimal` +
+    (commitHash ? ` ${commitHash}^ ${commitHash}` : " --cached");
 
-      if (stderr) {
-        console.error(`Execution error: ${stderr}`);
-        return;
-      }
+  exec(diffCommand, async (error, stdout, stderr): Promise<void> => {
+    if (error) {
+      console.error(`Execution error: ${error}`);
+      return;
+    }
 
-      await generate(stdout, modelName);
-    },
-  );
+    if (stderr) {
+      console.error(`Execution error: ${stderr}`);
+      return;
+    }
+
+    await generate(stdout, modelName);
+  });
 }
 
 async function generate(diff: string, modelName: string): Promise<void> {
