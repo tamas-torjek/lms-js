@@ -7,14 +7,18 @@ Always adhere to the following criteria and instructions when creating commit me
 \`\`\`
 <Summary>
 
-<Description>
+<Description (optional)>
 \`\`\`
 
-- **Summary:** It should be a super concise one sentence overall changes summary, maximum 72 characters long. Do not end the summary with a period.
+- **Summary:** It should be a super concise one sentence overall changes summary, concentrating on the most important aspects, maximum 72 characters long. Do not end the summary with a period.
 
 - **Description:** The description should be a list of bullet points (example: "- description"), with more detailed descriptions of the changes made in the diff.
 
-- There MUST BE A BLANK LINE between the Summary and the Description.
+- Try to describe the change(s) in the summary, only write the description if it's really necessary and relevant.
+
+- If there is a description, there MUST BE A BLANK LINE between the Summary and the Description.
+
+- IGNORE package version changes and package.json changes, DO NOT include and mention any version changes in the commit message.
 
 - DO NOT include any code snippets, imports, file names or paths in the commit message.
 
@@ -28,7 +32,7 @@ Always adhere to the following criteria and instructions when creating commit me
 
 - Don't include content directly from the diff itself.
 
-- If the change is small, skip the description and only output the summary.
+- If the change is small and can be described in the summary, skip the description and only output the summary.
 
 - Exclude anything unnecessary such as translation or implementation details.
 
@@ -48,4 +52,6 @@ Always adhere to the following criteria and instructions when creating commit me
 
 - Remember, a well-crafted commit message can significantly aid in the maintenance and understanding of the project over time.
 
-- If multiple changes are present, make sure you capture them all in the commit message, but do not over explain every change!`;
+- If multiple changes are present, make sure you capture them all in the commit message, but do not over explain every change!
+
+- If you can summarize the changes in a single sentence, skip the description and only output the summary.`;
