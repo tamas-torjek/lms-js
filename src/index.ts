@@ -130,7 +130,7 @@ async function generate(diff: string, modelName: string): Promise<void> {
   }
 
   if (BUMP_VERSION) {
-    await bumpVersion(true);
+    await bumpVersion(DRY_RUN);
   }
 
   const git = spawn("git", ["commit", "-e", "-m", message], {
