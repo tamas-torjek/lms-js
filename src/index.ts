@@ -120,6 +120,7 @@ async function generate(diff: string, modelName: string): Promise<void> {
     topKSampling: 20,
     topPSampling: 0.8,
     minPSampling: 0.05,
+    repeatPenalty: 1.1,
   });
 
   const message = result.nonReasoningContent.trim();
