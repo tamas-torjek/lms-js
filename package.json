@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "start": "tsc && node --enable-source-maps dist/index.js",
-    "build": "tsc"
+    "start": "npm run build && node --enable-source-maps dist/index.js",
+    "build": "tsc && cp src/*.md dist/"
   },
   "author": "Your Name",
   "license": "UNLICENSED",
